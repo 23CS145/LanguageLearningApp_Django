@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Language Learning</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e8b6f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #c28ee1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        fieldset {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        legend {
+            font-weight: bold;
+            color: #666;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #444;
+        }
+
+        input[type="text"],
+        input[type="radio"] {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: auto;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        #quizResults {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        #quizResults h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #quizResults p {
+            margin-bottom: 5px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Interactive Language Learning</h1>
+        </header>
+        <main>
+            <section id="quiz">
+                <h2>Language Quiz</h2>
+                <form id="quizForm">
+                    <fieldset id="multipleChoice">
+                        <legend>Multiple Choice Questions</legend>
+                    </fieldset>
+                    
+                    <fieldset id="fillBlanks">
+                        <legend>Fill in the Blanks</legend>
+                    </fieldset>
+                    
+                    <input type="submit" value="Submit">
+                </form>
+                <div id="quizResults"></div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2024 Language Learning App</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Questions and answers arrays
+        const questions = [
+            { question: 'What is "hello" in Spanish?', answers: ['Hola', 'Adiós', 'Gracias'], correctAnswer: 'Hola' },
+            { question: 'What is "thank you" in French?', answers: ['Bonjour', 'Merci', 'Oui'], correctAnswer: 'Merci' },
+            { question: 'How do you say "goodbye" in Italian?', answers: ['Ciao', 'Grazie', 'Buongiorno'], correctAnswer: 'Ciao' }
+        ];
+        
+        const fillBlanks = [
+            { question: '_____ is my favorite color.', correctAnswer: 'Blue' },
+            { question: 'She speaks _____ languages fluently.', correctAnswer: 'Several' },
+            { question: 'He lives in _____.', correctAnswer: 'London' }
+        ];
+        
+        // Function to display random questions
+        function displayRandomQuestions() {
+            let multipleChoiceFieldset = document.getElementById('multipleChoice');
+            let fillBlanksFieldset = document.getElementById('fillBlanks');
+            
+            // Shuffle questions
+            questions.sort(() => Math.random() - 0.5);
+            fillBlanks.sort(() => Math.random() - 0.5);
+            
+            // Display multiple choice questions
+            questions.forEach((question, index) => {
+                let questionHTML = `
+                    <label>${question.question}</label><br>
+                `;
+                question.answers.forEach((answer, answerIndex) => {
+                    questionHTML += `
+                        <input type="radio" id="answer${index + 1}${answerIndex + 1}" name="question${index + 1}" value="${answer}">
+                        <label for="answer${index + 1}${answerIndex + 1}">${answer}</label><br>
+                    `;
+                });
+                questionHTML += '<br>';
+                multipleChoiceFieldset.innerHTML += questionHTML;
+            });
+            
+            // Display fill in the blanks questions
+            fillBlanks.forEach((question, index) => {
+                let questionHTML = `
+                    <label>${question.question}</label><br>
+                    <input type="text" id="answer${questions.length + index + 1}" name="sentence${index + 1}"><br><br>
+                `;
+                fillBlanksFieldset.innerHTML += questionHTML;
+            });
+        }
+        
+        // Display random questions when the page loads
+        window.onload = function() {
+            displayRandomQuestions();
+        };
+        
+        // Form submission handling
+        document.getElementById('quizForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Process quiz submission
+            let score = 0;
+            
+            // Check multiple choice answers
+            questions.forEach((question, index) => {
+                let selectedAnswer = document.querySelector(`input[name="question${index + 1}"]:checked`);
+                if (selectedAnswer && selectedAnswer.value === question.correctAnswer) {
+                    score++;
+                }
+            });
+            
+            // Check fill-in-the-blank answers
+            fillBlanks.forEach((question, index) => {
+                let answer = document.getElementById(`answer${questions.length + index + 1}`).value.trim().toLowerCase();
+                if (answer === question.correctAnswer.toLowerCase()) {
+                    score++;
+                }
+            });
+            
+            // Display results
+            let results = document.getElementById('quizResults');
+            results.innerHTML = `
+                <h3>Quiz Results</h3>
+                <p>Score: ${score} out of ${questions.length + fillBlanks.length}</p>
+            `;
+        });
+    </script>
+</body>
+</html>
